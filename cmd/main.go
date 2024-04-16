@@ -20,6 +20,11 @@ func snippetView(w http.ResponseWriter, r *http.Request) {
 }
 
 func snippetCreate(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		w.Header().Set("Allow", http.MethodPost)                         // Put a constant post
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed) // Will use w.WriteHeader(403), and w.Write()
+		return
+	}
 	w.Write([]byte("Create a new snippet"))
 }
 
