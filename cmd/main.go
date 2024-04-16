@@ -1,8 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 )
 
 // Define the home handler function which writes a byte slice on body
@@ -16,7 +18,14 @@ func home(w http.ResponseWriter, r *http.Request) {
 
 // Write byte on the new route
 func snippetView(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Display specific snippet..."))
+	// Will get the id parameter from query, if return err or the id is less than 1, we return 404
+	id, err := strconv.Atoi(r.URL.Query().Get("id"))
+	if err != nil || id < 1 {
+		http.NotFound(w, r)
+		return
+	}
+
+	fmt.Fprintf(w, "Display a specific snippet with ID %d...", id)
 }
 
 func snippetCreate(w http.ResponseWriter, r *http.Request) {
