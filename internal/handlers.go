@@ -15,14 +15,20 @@ func Home(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// using ttemplate.parsefiles() -> will read a template
-	ts, err := template.ParseFiles("./web/html/pages/home.tmpl.html")
+	files := []string{
+		"./web/html/base/base.tmpl.html",
+		"./web/html/partials/nav.tmpl.html",
+		"./web/html/pages/home.tmpl.html",
+	}
+
+	// using template.parsefiles() -> will read a template
+	ts, err := template.ParseFiles(files...)
 	if err != nil {
 		log.Print(err.Error())
 		http.Error(w, "Internal Server Error", 500)
 	}
 
-	err = ts.Execute(w, nil)
+	err = ts.ExecuteTemplate(w, "base", nil) // Will call the template parse and use like a template, the second argument say that is the base of this template
 	if err != nil {
 		log.Print(err.Error())
 		http.Error(w, "Internal Server Error", 500)
