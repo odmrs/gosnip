@@ -2,6 +2,8 @@ package handlers
 
 import (
 	"fmt"
+	"html/template"
+	"log"
 	"net/http"
 	"strconv"
 )
@@ -13,7 +15,21 @@ func Home(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Write([]byte("Hello from GoSnip"))
+	// using ttemplate.parsefiles() -> will read a template
+	ts, err := template.ParseFiles("./web/html/pages/home.tmpl.html")
+	if err != nil {
+		log.Print(err.Error())
+		http.Error(w, "Internal Server Error", 500)
+	}
+
+	err = ts.Execute(w, nil)
+	if err != nil {
+		log.Print(err.Error())
+		http.Error(w, "Internal Server Error", 500)
+	}
+
+	// No more longer use, will write the template instead write harded code
+	// w.Write([]byte("Hello from GoSnip"))
 }
 
 // Write byte on the new route
@@ -29,7 +45,7 @@ func SnippetView(w http.ResponseWriter, r *http.Request) {
 }
 
 func SnippetCreate(w http.ResponseWriter, r *http.Request) {
-	if r.Method != "POST" {
+	if r.Method != http.MethodPost {
 		w.Header().Set("Allow", http.MethodPost)                         // Put a constant post
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed) // Will use w.WriteHeader(403), and w.Write()
 		return
